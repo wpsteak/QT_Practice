@@ -15,8 +15,8 @@ using namespace std;
 psw pl[NUM_CAMS];
 
 
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
+//typedef unsigned char uint8_t;
+//typedef unsigned short uint16_t;
 
 //sudo chmod a+w /dev/bus/usb/001/011
 
@@ -31,13 +31,17 @@ union imgdata {
     uint32_t raw;
 } __attribute__((packed));
 
-float image_f[156][208];
+union imgdata image_f[156][208];
 QImage test()
 {
-    QImage myImage = QImage(206, 156, QImage::Format_RGB32);
+
+    QImage myImage = QImage(206, 156, QImage::Format_ARGB32_Premultiplied);
+//    QImage myImage = QImage(206, 156, QImage::Format_RGBA8888_Premultiplied);
+//    QImage myImage = QImage(206, 156, QImage::Format_RGB32);
+
     cout << "bbb" << endl;
 
-int numfound = 0;
+    int numfound = 0;
     sw_retcode status;
 //    status = Seekware_Find(pl, NUM_CAMS, &numfound);
 //    cout << numfound << endl;
@@ -54,30 +58,30 @@ int numfound = 0;
 //    else {
         cout << "eee" << endl;
          printf("HiHiHi\n");
-         float *pixel = image_f[0];
-
+//         float *pixel = image_f[0];
+        const union imgdata * pixel = image_f[0];
          int x_offset = 0;
          int y_offset = 0;
          int x, y;
 
 
-        if (Seekware_GetImage(dev, NULL, &image_f[0][0], NULL) != SW_RETCODE_NONE){
+        if (Seekware_GetImage(dev, NULL,NULL, &image_f[0][0].raw) != SW_RETCODE_NONE){
             fprintf(stderr, "Get Image error!\n");
             //return -1;
         }
 
 
         for (y=0; y<156; ++y) {
-                       int dy = y + y_offset;
-                       for (x=0; x<206; ++x, ++pixel) {
-                           int dx = x + x_offset;
-                           union imgdata * p = (union imgdata *)pixel;
-//                           printf("%d %d %d\n", p->r, p->g, p->b);
-                           myImage.setPixel(dx,dy,qRgb(p->r,p->g,p->b));
+            int dy = y + y_offset;
+            for (x=0; x<206; ++x, ++pixel) {
+                int dx = x + x_offset;
+                union imgdata * p = (union imgdata *)pixel;
+                //printf("%d %d %d %d\n", p->r, p->g, p->b, p->a);
+//                myImage.setPixel(dx,dy,qRgb(p->r,p->g,p->b));
+                myImage.setPixel(dx,dy,qRgba(p->r,p->g,p->b,p->a));
 
-                       }
+            }
         }
-
 
 //           for (int l=0; l < sizeWidth; l++){
 //               for (int c=0; c < sizeHeight; c++){
@@ -92,9 +96,10 @@ int numfound = 0;
 }
 
 void MainWindow::update(){
+
+
     QImage zzz = test();
     ui->imageLabel->setPixmap(QPixmap::fromImage(zzz));
-
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -103,24 +108,22 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QImage image("/home/pi/Desktop/ig.png");
-    ui->imageLabel->setPixmap(QPixmap::fromImage(image));
+//    QImage image("/home/pi/Desktop/ig.png");
+//    ui->imageLabel->setPixmap(QPixmap::fromImage(image));
 
-    int sizeWidth = 300;
-    int sizeHeight = 300;
+//    int sizeWidth = 300;
+//    int sizeHeight = 300;
 
-    QImage myImage = QImage(sizeWidth, sizeHeight, QImage::Format_RGB32);
-       for (int l=0; l < sizeWidth; l++){
-           for (int c=0; c < sizeHeight; c++){
-               myImage.setPixel(l,c,qRgb(100,150,200));
-           }
-       }
+//    QImage myImage = QImage(sizeWidth, sizeHeight, QImage::Format_RGB32);
+//       for (int l=0; l < sizeWidth; l++){
+//           for (int c=0; c < sizeHeight; c++){
+//               myImage.setPixel(l,c,qRgb(100,150,200));
+//           }
+//       }
 
-    QGraphicsScene *graphic = new QGraphicsScene(this);
-    graphic -> addPixmap(QPixmap::fromImage(myImage));
-    ui -> graphicsView->setScene(graphic);
-
-
+//    QGraphicsScene *graphic = new QGraphicsScene(this);
+//    graphic -> addPixmap(QPixmap::fromImage(myImage));
+//    ui -> graphicsView->setScene(graphic);
 
     sw_retcode status;
         int numfound = 0;
@@ -137,6 +140,7 @@ MainWindow::MainWindow(QWidget *parent) :
        fprintf(stderr, "Could not open PIR Device (%d)\n", status);
     }
     else {
+//        Seekware_SetSetting(dev, SETTING_ACTIVE_LUT, SW_LUT_BLACK);
 
         QTimer *timer = new QTimer(this);
         timer->setInterval(50);
@@ -145,8 +149,6 @@ MainWindow::MainWindow(QWidget *parent) :
         timer->start();
 
     }
-
-
 
 }
 
