@@ -13,19 +13,25 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    object.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    object.h
 
 FORMS    += mainwindow.ui
 
 QMAKE_CXXFLAGS += -std=c++11 -pthread
 QMAKE_CFLAGS += -std=c++11 -pthread
 LIBS += -pthread
+LIBS += -L/usr/local/lib
+#LIBS += -L/usr/lib/arm-linux-gnueabihf/libusb-1.0.a
+LIBS += `pkg-config --libs libusb-1.0`
 
 CONFIG += console
 
 INCLUDEPATH += /usr/include/c++/4.9.2
 INCLUDEPATH += /usr/local/include/seekware
+INCLUDEPATH += /usr/include/libusb-1.0
 
 QMAKE_LFLAGS += -L/usr/local/lib -lseekware -lstdc++ -lpthread `pkg-config --libs libusb-1.0`
