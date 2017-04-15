@@ -25,6 +25,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QLabel *imageLabel;
+    QLabel *tempLabel;
     QPushButton *m_button;
 };
 

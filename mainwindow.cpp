@@ -10,7 +10,7 @@
 #include <QTimer>
 
 #define NUM_CAMS 9
-#define NUM_COLS 208
+#define NUM_COLS 206
 #define NUM_ROWS 156
 using namespace std;
 psw pl[NUM_CAMS];
@@ -34,8 +34,8 @@ struct TempLocation{
     uint8_t temp;
 };
 
-union imgdata image_rgb[156][208];
-float image_f[156][208];
+union imgdata image_rgb[156][206];
+float image_f[156][206];
 
 
 TempLocation findMax(){
@@ -46,7 +46,7 @@ TempLocation findMax(){
         for(int j = 0; j < NUM_COLS; j++) {
             if(image_f[i][j] > maxTemp) {
                 maxTemp = image_f[i][j];
-                maxPoint = QPoint(i,j);
+                maxPoint = QPoint(j,i);
             }
         }
     }
@@ -95,7 +95,11 @@ void MainWindow::update()
 {
     QImage image = test();
     struct TempLocation info = findMax();
-    fprintf(stderr, "%d (%d,%d)\n", info.temp,info.tempLoc.x(),info.tempLoc.y());
+    //fprintf(stderr, "%d (%d,%d)\n", info.temp,info.tempLoc.x(),info.tempLoc.y());
+
+
+    ui->tempLabel->setText(QString::number(info.temp));
+    ui->tempLabel->setGeometry(QRect(info.tempLoc,QSize(68,21)));
 
     ui->imageLabel->setPixmap(QPixmap::fromImage(image));
 
@@ -117,12 +121,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     dev=pl[0];
 
+
     printf("Seekware_Open\n");
     status = Seekware_Open(dev);
     if (SW_RETCODE_NONE != status) {
        fprintf(stderr, "Could not open PIR Device (%d)\n", status);
     }
     else {
+            //printf("%d %d\n", dev->frame_cols, dev->frame_rows);
         Seekware_SetSetting(dev, SETTING_ACTIVE_LUT, SW_LUT_IRON);
 
         QTimer *timer = new QTimer(this);
