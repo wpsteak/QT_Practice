@@ -15,6 +15,7 @@
 using namespace std;
 psw pl[NUM_CAMS];
 psw dev;
+bool central;
 
 //sudo chmod a+w /dev/bus/usb/001/004
 
@@ -31,7 +32,7 @@ union imgdata {
 
 struct TempLocation{
     QPoint tempLoc;
-    uint8_t temp;
+    float temp;
 };
 
 union imgdata image_rgb[156][206];
@@ -94,16 +95,23 @@ QImage test()
 void MainWindow::update()
 {
     QImage image = test();
-    struct TempLocation info = findMax();
+
+    if(central){
+
+        ui->tempLabel->setText(QString::number(image_f[78][103]));
+        ui->tempLabel->setGeometry(QRect(QPoint(103,78),QSize(68,21)));
+    }
+    else {
+        struct TempLocation info = findMax();
+        ui->tempLabel->setText(QString::number(info.temp));
+        ui->tempLabel->setGeometry(QRect(info.tempLoc,QSize(68,21)));
+    }
+
+
     //fprintf(stderr, "%d (%d,%d)\n", info.temp,info.tempLoc.x(),info.tempLoc.y());
-
-
-    ui->tempLabel->setText(QString::number(info.temp));
-    ui->tempLabel->setGeometry(QRect(info.tempLoc,QSize(68,21)));
-
     ui->imageLabel->setPixmap(QPixmap::fromImage(image));
 
-    //float src = image_f[78][104];
+    //float src = image_f[78][103];
     //fprintf(stderr, "%f\n", src);
 
 }
@@ -114,8 +122,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    central = false;
+
     sw_retcode status;
-        int numfound = 0;
+    int numfound = 0;
     status = Seekware_Find(pl, NUM_CAMS, &numfound);
     cout << numfound << endl;
 
@@ -166,3 +176,22 @@ void MainWindow::on_ironButton_released()
     Seekware_SetSetting(dev, SETTING_ACTIVE_LUT, SW_LUT_IRON);
 }
 
+void MainWindow::on_pushButton_released()
+{
+    Seekware_SetSetting(dev, SETTING_ACTIVE_LUT, SW_LUT_COOL);
+}
+
+void MainWindow::on_pushButton_2_released()
+{
+    Seekware_SetSetting(dev, SETTING_ACTIVE_LUT, SW_LUT_WHITE);
+}
+
+void MainWindow::on_maxButton_released()
+{
+    central = false;
+}
+
+void MainWindow::on_centralButton_released()
+{
+    central = true;
+}

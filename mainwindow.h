@@ -22,6 +22,14 @@ private slots:
     void on_ironButton_released();
     void on_amberButton_released();
 
+    void on_pushButton_released();
+
+    void on_pushButton_2_released();
+
+    void on_maxButton_released();
+
+    void on_centralButton_released();
+
 private:
     Ui::MainWindow *ui;
     QLabel *imageLabel;
