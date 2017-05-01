@@ -1,13 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
-#include <QPushButton>
-#include <QMessageBox>
+#include "optionsdialog.h"
 
 #include "seekware.h"
 #include <iostream>
 
+#include <QPushButton>
+#include <QMessageBox>
 #include <QTimer>
+#include <QAction>
 
 #define NUM_CAMS 9
 #define NUM_COLS 206
@@ -120,9 +121,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    central = false;
+
     ui->setupUi(this);
 
-    central = false;
+    createMenus();
 
     sw_retcode status;
     int numfound = 0;
@@ -130,7 +133,6 @@ MainWindow::MainWindow(QWidget *parent) :
     cout << numfound << endl;
 
     dev=pl[0];
-
 
     printf("Seekware_Open\n");
     status = Seekware_Open(dev);
@@ -148,6 +150,27 @@ MainWindow::MainWindow(QWidget *parent) :
 
         timer->start();
     }
+}
+
+
+void MainWindow::optionsWindow() {
+    QWidget *widget = new OptionsDialog;
+    widget->show();
+}
+
+void MainWindow::createMenus() {
+    QMenu *toolsMenu = menuBar()->addMenu("Tools");
+    QAction *configAction = new QAction(tr("Configuration"),this);
+    QAction *optionsAction = new QAction(tr("Options"),this);
+    connect(optionsAction, &QAction::triggered, this, &MainWindow::optionsWindow);
+    toolsMenu->addAction(configAction);
+    toolsMenu->addAction(optionsAction);
+
+//    QAction *exitAction = new QAction(tr("Exit"),this);
+    //connect(exitAction, SIGNAL(trigg))
+    QMenu *exitMenu = menuBar()->addMenu("Exit");
+    //exitMenu->addAction()
+
 }
 
 MainWindow::~MainWindow()

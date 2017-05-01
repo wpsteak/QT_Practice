@@ -14,12 +14,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    object.cpp
+    optionsdialog.cpp
 
 HEADERS  += mainwindow.h \
-    object.h
+    optionsdialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    optionsdialog.ui
 
 QMAKE_CXXFLAGS += -std=c++11 -pthread
 QMAKE_CFLAGS += -std=c++11 -pthread
