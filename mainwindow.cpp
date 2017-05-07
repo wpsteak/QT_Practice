@@ -9,6 +9,9 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QAction>
+#include <QFile>
+#include <QString>
+#include <QDateTime>
 
 #define NUM_CAMS 9
 #define NUM_COLS 206
@@ -112,9 +115,14 @@ void MainWindow::update()
     //fprintf(stderr, "%d (%d,%d)\n", info.temp,info.tempLoc.x(),info.tempLoc.y());
     ui->imageLabel->setPixmap(QPixmap::fromImage(image));
 
-    //float src = image_f[78][103];
-    //fprintf(stderr, "%f\n", src);
 
+    QDateTime now = QDateTime::currentDateTime();
+    QString timestamp = now.toString(QLatin1String("yyyyMMdd-hhmmsszzz"));
+    QString filename = QString::fromLatin1("image-%1.png").arg(timestamp);
+
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly);
+    QPixmap::fromImage(image).save(&file, "PNG");
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -156,6 +164,7 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::optionsWindow() {
     QWidget *widget = new OptionsDialog;
     widget->show();
+
 }
 
 void MainWindow::createMenus() {
