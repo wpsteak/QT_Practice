@@ -34,6 +34,7 @@ private:
     QLabel *imageLabel;
     QLabel *tempLabel;
     QPushButton *m_button;
+    QLabel *monitorLabel;
 
     void createMenus();
 };

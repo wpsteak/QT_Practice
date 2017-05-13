@@ -109,8 +109,8 @@ void MainWindow::update()
         struct TempLocation info = findMax();
         ui->tempLabel->setText(QString::number(info.temp));
         ui->tempLabel->setGeometry(QRect(info.tempLoc,QSize(68,21)));
+        ui->monitorLabel->setText(QString::number(info.temp));
     }
-
 
     //fprintf(stderr, "%d (%d,%d)\n", info.temp,info.tempLoc.x(),info.tempLoc.y());
     ui->imageLabel->setPixmap(QPixmap::fromImage(image));
