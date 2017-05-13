@@ -34,18 +34,25 @@ union imgdata {
     uint32_t raw;
 } __attribute__((packed));
 
-struct TempLocation{
+struct TempInfo {
     QPoint tempLoc;
     float temp;
+};
+
+struct PoleTemperatures {
+    TempInfo maxInfo;
+    TempInfo minInfo;
 };
 
 union imgdata image_rgb[156][206];
 float image_f[156][206];
 
 
-TempLocation findMax(){
+PoleTemperatures findPoleTemps(){
     float maxTemp = image_f[0][0];
+    float minTemp = image_f[0][0];
     QPoint maxPoint = QPoint(0,0);
+    QPoint minPoint = QPoint(0,0);
 
     for(int i = 0; i< NUM_ROWS; i++) {
         for(int j = 0; j < NUM_COLS; j++) {
@@ -53,14 +60,26 @@ TempLocation findMax(){
                 maxTemp = image_f[i][j];
                 maxPoint = QPoint(j,i);
             }
+            if(image_f[i][j] < minTemp) {
+                minTemp = image_f[i][j];
+                minPoint = QPoint(j,i);
+            }
         }
     }
 
-    struct TempLocation info;
-    info.tempLoc = maxPoint;
-    info.temp = maxTemp;
+    struct TempInfo maxInfo;
+    maxInfo.tempLoc = maxPoint;
+    maxInfo.temp = maxTemp;
 
-    return info;
+    struct TempInfo minInfo;
+    minInfo.tempLoc = minPoint;
+    minInfo.temp = minTemp;
+
+    struct PoleTemperatures poleTempInfos;
+    poleTempInfos.maxInfo = maxInfo;
+    poleTempInfos.minInfo = minInfo;
+
+    return poleTempInfos;
 }
 
 
@@ -106,10 +125,17 @@ void MainWindow::update()
         ui->tempLabel->setGeometry(QRect(QPoint(103,78),QSize(68,21)));
     }
     else {
-        struct TempLocation info = findMax();
-        ui->tempLabel->setText(QString::number(info.temp));
-        ui->tempLabel->setGeometry(QRect(info.tempLoc,QSize(68,21)));
-        ui->monitorLabel->setText(QString::number(info.temp));
+        struct PoleTemperatures poleTempInfos = findPoleTemps();
+        struct TempInfo maxTempInfo = poleTempInfos.maxInfo;
+        struct TempInfo minTempInfo = poleTempInfos.minInfo;
+
+        ui->tempLabel->setText(QString::number(maxTempInfo.temp));
+        ui->tempLabel->setGeometry(QRect(maxTempInfo.tempLoc,QSize(68,21)));
+
+        ui->minTempLabel->setText(QString::number(minTempInfo.temp));
+        ui->minTempLabel->setGeometry(QRect(minTempInfo.tempLoc,QSize(68,21)));
+
+        ui->monitorLabel->setText(QString::number(maxTempInfo.temp));
     }
 
     //fprintf(stderr, "%d (%d,%d)\n", info.temp,info.tempLoc.x(),info.tempLoc.y());

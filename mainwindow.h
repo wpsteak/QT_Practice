@@ -33,6 +33,7 @@ private:
     Ui::MainWindow *ui;
     QLabel *imageLabel;
     QLabel *tempLabel;
+    QLabel *minTempLabel;
     QPushButton *m_button;
     QLabel *monitorLabel;
 
