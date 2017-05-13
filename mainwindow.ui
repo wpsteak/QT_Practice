@@ -84,7 +84,7 @@
      <string>Central Temp</string>
     </property>
    </widget>
-   <widget class="QWidget" name="widget" native="true">
+   <widget class="QWidget" name="displayWidget" native="true">
     <property name="geometry">
      <rect>
       <x>20</x>

@@ -118,11 +118,15 @@ void MainWindow::update()
 
     QDateTime now = QDateTime::currentDateTime();
     QString timestamp = now.toString(QLatin1String("yyyyMMdd-hhmmsszzz"));
-    QString filename = QString::fromLatin1("image-%1.png").arg(timestamp);
-
+    //QString filename = QString::fromLatin1("image-%1.png").arg(timestamp);
+    QString filename = "aaa.png";
     QFile file(filename);
     file.open(QIODevice::WriteOnly);
-    QPixmap::fromImage(image).save(&file, "PNG");
+//    QPixmap::fromImage(image).save(&file, "PNG");
+
+//    QPixmap pixmap = QPixmap::grabWidget(ui->displayWidget); //deprecated, use QWidget::grab() instead
+    QPixmap pixmap = ui->displayWidget->grab();
+    pixmap.save(&file, "PNG");
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -177,7 +181,7 @@ void MainWindow::createMenus() {
 
 //    QAction *exitAction = new QAction(tr("Exit"),this);
     //connect(exitAction, SIGNAL(trigg))
-    QMenu *exitMenu = menuBar()->addMenu("Exit");
+//    QMenu *exitMenu = menuBar()->addMenu("Exit");
     //exitMenu->addAction()
 
 }
